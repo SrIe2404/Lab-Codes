@@ -1,0 +1,174 @@
+Xml code:
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent"
+ android:orientation="vertical"
+ android:padding="20dp"
+ android:background="#F5F5F5">
+ <TextView
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="Multithreading Application"
+ android:textSize="24sp"
+ android:textStyle="bold"
+ android:gravity="center"
+ android:textColor="#222222"/>
+ <TextView
+ android:id="@+id/status"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:layout_marginTop="15dp"
+ android:text="Ready to Start"
+ android:textSize="17sp"
+ android:gravity="center"
+ android:textStyle="bold"/>
+ <!-- Thread 1 -->
+ <TextView
+ android:id="@+id/task1"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:layout_marginTop="25dp"
+ android:text="Thread 1 - Download Task"
+ android:textSize="17sp"
+ android:textStyle="bold"/>
+ <ProgressBar
+ android:id="@+id/progress1"
+ style="?android:attr/progressBarStyleHorizontal"
+ android:layout_width="match_parent"
+ android:layout_height="12dp"
+ android:max="100"/>
+ <TextView
+ android:id="@+id/text1"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="Waiting..."
+ android:textSize="14sp"/>
+<!-- Thread 2 -->
+ <TextView
+ android:id="@+id/task2"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:layout_marginTop="20dp"
+ android:text="Thread 2 - File Processing"
+ android:textSize="17sp"
+ android:textStyle="bold"/>
+ <ProgressBar
+ android:id="@+id/progress2"
+ style="?android:attr/progressBarStyleHorizontal"
+ android:layout_width="match_parent"
+ android:layout_height="12dp"
+ android:max="100"/>
+ <TextView
+ android:id="@+id/text2"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="Waiting..."
+ android:textSize="14sp"/>
+ <!-- Overall -->
+ <TextView
+ android:id="@+id/overall"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:layout_marginTop="25dp"
+ android:text="Overall Progress: 0%"
+ android:textSize="18sp"
+ android:textStyle="bold"
+ android:gravity="center"/>
+ <TextView
+ android:id="@+id/log"
+ android:layout_width="match_parent"
+ android:layout_height="120dp"
+ android:layout_marginTop="15dp"
+ android:background="#222222"
+ android:padding="10dp"
+ android:text="Execution Log"
+ android:textColor="#FFFFFF"
+ android:textSize="13sp"/>
+<Button
+ android:id="@+id/start"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:layout_marginTop="20dp"
+ android:text="START THREADS"/>
+</LinearLayout>
+
+mainactivity.java:
+package com.example.myapplication;
+import android.os.Bundle;
+import android.os.Handler;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+ ProgressBar p1, p2;
+ TextView text1, text2, status, overall, log;
+ Button start;
+ Handler handler = new Handler();
+ int a = 0, b = 0;
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+ super.onCreate(savedInstanceState);
+ setContentView(R.layout.activity_main);
+ p1 = findViewById(R.id.progress1);
+ p2 = findViewById(R.id.progress2);
+ text1 = findViewById(R.id.text1);
+ text2 = findViewById(R.id.text2);
+ status = findViewById(R.id.status);
+ overall = findViewById(R.id.overall);
+ log = findViewById(R.id.log);
+ start = findViewById(R.id.start);
+ start.setOnClickListener(v -> startThreads());
+ }
+ void startThreads() {
+ start.setEnabled(false);
+ status.setText(" Two Threads Running...");
+ log.setText("Thread 1 started\nThread 2 started\n");
+ Thread thread1 = new Thread(() -> {
+ for (a = 0; a <= 100; a++) {
+ int value = a;
+handler.post(() -> {
+ p1.setProgress(value);
+ text1.setText("Processing: " + value + "%");
+ updateOverall();
+ });
+ try {
+ Thread.sleep(50);
+ } catch (Exception e) {
+ e.printStackTrace();
+ }
+ }
+ handler.post(() ->
+ log.append("Thread 1 completed ✓\n"));
+ });
+ Thread thread2 = new Thread(() -> {
+ for (b = 0; b <= 100; b++) {
+ int value = b;
+ handler.post(() -> {
+ p2.setProgress(value);
+ text2.setText("Processing: " + value + "%");
+ updateOverall();
+ });
+ try {
+ Thread.sleep(80);
+ } catch (Exception e) {
+ e.printStackTrace();
+ }
+ }
+ handler.post(() ->
+ log.append("Thread 2 completed ✓\n"));
+ });
+ thread1.start();
+ thread2.start();
+ log.append("Both threads are executing simultaneously...\n");
+ }
+ void updateOverall() {
+int progress = (a + b) / 2;
+ overall.setText(
+ "Overall Progress: " + progress + "%"
+ );
+ if (progress == 100) {
+ status.setText("✓ Both Threads Completed");
+ start.setEnabled(true);
+ }
+ }
+}
