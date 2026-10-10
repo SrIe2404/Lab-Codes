@@ -1,0 +1,279 @@
+Xml_code:
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+ xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent"
+ android:orientation="vertical"
+ android:padding="20dp">
+ <TextView
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="Student Database"
+ android:textSize="26sp"
+ android:textStyle="bold"
+ android:gravity="center"
+ android:padding="15dp" />
+ <EditText
+ android:id="@+id/etName"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter Student Name"
+ android:inputType="textPersonName" />
+Ex.No:05 Application that Makes Use of Database 03/07/2026
+ <EditText
+ android:id="@+id/etRegisterNo"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter Register Number"
+ android:inputType="text" />
+ <EditText
+ android:id="@+id/etDepartment"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter Department"
+ android:inputType="text" />
+ <Button
+ android:id="@+id/btnAdd"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="ADD STUDENT"/>
+ <Button
+ android:id="@+id/btnView"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="VIEW STUDENTS" />
+ <Button
+ android:id="@+id/btnUpdate"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="UPDATE STUDENT" />
+ <Button
+ android:id="@+id/btnDelete"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="DELETE STUDENT" />
+ <TextView
+ android:id="@+id/tvResult"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:padding="10dp"
+ android:textSize="16sp" />
+</LinearLayout>
+
+MainActivity.java:
+package com.example.myapplication;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+ EditText etName, etRegisterNo, etDepartment;
+ Button btnAdd, btnView, btnUpdate, btnDelete;
+ TextView tvResult;
+ DatabaseHelper databaseHelper;
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+ super.onCreate(savedInstanceState);
+ setContentView(R.layout.activity_main);
+ etName = findViewById(R.id.etName);
+ etRegisterNo = findViewById(R.id.etRegisterNo);
+ etDepartment = findViewById(R.id.etDepartment);
+ btnAdd = findViewById(R.id.btnAdd);
+ btnView = findViewById(R.id.btnView);
+ btnUpdate = findViewById(R.id.btnUpdate);
+ btnDelete = findViewById(R.id.btnDelete);
+ tvResult = findViewById(R.id.tvResult);
+ databaseHelper = new DatabaseHelper(this);
+ // ADD
+ btnAdd.setOnClickListener(v -> {
+ String name = etName.getText().toString();
+ String regno = etRegisterNo.getText().toString();
+ String department = etDepartment.getText().toString();
+ if (name.isEmpty() || regno.isEmpty() || department.isEmpty()) {
+Toast.makeText(
+ this,
+ "Please enter all details",
+ Toast.LENGTH_SHORT
+ ).show();
+ return;
+ }
+ boolean result = databaseHelper.addStudent(
+ name,
+ regno,
+ department
+ );
+ if (result) {
+ Toast.makeText(
+ this,
+ "Student Added Successfully",
+ Toast.LENGTH_SHORT
+ ).show();
+ clearFields();
+ } else {
+ Toast.makeText(
+ this,
+ "Register Number already exists",
+ Toast.LENGTH_SHORT
+ ).show();
+ }
+ });
+ // VIEW
+ btnView.setOnClickListener(v -> {
+ Cursor cursor = databaseHelper.getStudents();
+ StringBuilder data = new StringBuilder();
+ if (cursor.getCount() == 0) {
+ tvResult.setText("No student records found");
+ } else {
+ while (cursor.moveToNext()) {
+ data.append("ID: ")
+ .append(cursor.getInt(0))
+ .append("\n");
+data.append("Name: ")
+ .append(cursor.getString(1))
+ .append("\n");
+ data.append("Register No: ")
+ .append(cursor.getString(2))
+ .append("\n");
+ data.append("Department: ")
+ .append(cursor.getString(3))
+ .append("\n");
+ data.append("----------------------\n");
+ }
+ tvResult.setText(data.toString());
+ }
+ cursor.close();
+ });
+ // UPDATE
+ btnUpdate.setOnClickListener(v -> {
+ String name = etName.getText().toString();
+ String regno = etRegisterNo.getText().toString();
+ String department = etDepartment.getText().toString();
+ boolean result = databaseHelper.updateStudent(
+ name,
+ regno,
+ department
+ );
+ if (result) {
+ Toast.makeText(
+ this,
+ "Student Updated Successfully",
+ Toast.LENGTH_SHORT
+ ).show();
+ clearFields();
+ } else {
+ Toast.makeText(
+ this,
+ "Student Not Found",
+ Toast.LENGTH_SHORT
+).show();
+ }
+ });
+ // DELETE
+ btnDelete.setOnClickListener(v -> {
+ String regno = etRegisterNo.getText().toString();
+ boolean result = databaseHelper.deleteStudent(regno);
+ if (result) {
+ Toast.makeText(
+ this,
+ "Student Deleted Successfully",
+ Toast.LENGTH_SHORT
+ ).show();
+ clearFields();
+ } else {
+ Toast.makeText(
+ this,
+ "Student Not Found",
+ Toast.LENGTH_SHORT
+ ).show();
+ }
+ });
+ }
+ private void clearFields() {
+ etName.setText("");
+ etRegisterNo.setText("");
+ etDepartment.setText("");
+ }
+}
+
+DatabaseHelper.java:
+package com.example.myapplication;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+public class DatabaseHelper extends SQLiteOpenHelper {
+ private static final String DATABASE_NAME = "StudentDB";
+ private static final int DATABASE_VERSION = 1;
+ private static final String TABLE_NAME = "students";
+ private static final String COL_ID = "id";
+ private static final String COL_NAME = "name";
+ private static final String COL_REGNO = "regno";
+ private static final String COL_DEPT = "department";
+ public DatabaseHelper(Context context) {
+ super(context, DATABASE_NAME, null, DATABASE_VERSION);
+ }
+ @Override
+ public void onCreate(SQLiteDatabase db) {
+ String query = "CREATE TABLE " + TABLE_NAME + " (" +
+ COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+ COL_NAME + " TEXT, " +
+ COL_REGNO + " TEXT UNIQUE, " +
+ COL_DEPT + " TEXT)";
+ db.execSQL(query);
+ }
+ @Override
+ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+ db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+ onCreate(db);
+ }
+ // ADD STUDENT
+ public boolean addStudent(String name, String regno, String department) {
+ SQLiteDatabase db = this.getWritableDatabase();
+ ContentValues values = new ContentValues();
+ values.put(COL_NAME, name);
+ values.put(COL_REGNO, regno);
+ values.put(COL_DEPT, department);
+ long result = db.insert(TABLE_NAME, null, values);
+ return result != -1;
+ }
+ // VIEW STUDENTS
+ public Cursor getStudents() {
+ SQLiteDatabase db = this.getReadableDatabase();
+ return db.rawQuery(
+ "SELECT * FROM " + TABLE_NAME,
+ null
+ );
+ }
+ // UPDATE STUDENT
+ public boolean updateStudent(
+ String name,
+ String regno,
+ String department) {
+ SQLiteDatabase db = this.getWritableDatabase();
+ ContentValues values = new ContentValues();
+ values.put(COL_NAME, name);
+ values.put(COL_DEPT, department);
+ int result = db.update(
+ TABLE_NAME,
+ values,
+ COL_REGNO + "=?",
+ new String[]{regno}
+ );
+ return result > 0;
+ }
+ // DELETE STUDENT
+ public boolean deleteStudent(String regno) {
+ SQLiteDatabase db = this.getWritableDatabase();
+ int result = db.delete(
+ TABLE_NAME,
+ COL_REGNO + "=?",
+ new String[]{regno}
+ );
+ return result > 0;
+ }
+}

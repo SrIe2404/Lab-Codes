@@ -1,0 +1,222 @@
+Xml code:
+activity.xml_1 code:
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:app="http://schemas.android.com/apk/res-auto"
+ xmlns:tools="http://schemas.android.com/tools"
+ android:id="@+id/main"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent"
+ tools:context=".MainActivity1">
+ <LinearLayout
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:orientation="vertical"
+ android:gravity="center"
+ android:layout_margin="20dp">
+ <TextView
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Student Information"
+ android:textAppearance="?android:attr/textAppearanceLarge"
+ android:textStyle="bold"
+ android:layout_gravity="center" />
+ <EditText
+Ex.No:02 Application using Layout Managers and Event Listeners 20/07/2026
+ android:id="@+id/editTextName"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter Name" />
+ <EditText
+ android:id="@+id/editTextDno"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter D.NO" />
+ <EditText
+ android:id="@+id/editTextDept"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter Department" />
+ <EditText
+ android:id="@+id/editTextContact"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter Contact Number" />
+Xml code:
+activity.xml_1 code:
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:app="http://schemas.android.com/apk/res-auto"
+ xmlns:tools="http://schemas.android.com/tools"
+ android:id="@+id/main"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent"
+ tools:context=".MainActivity1">
+ <LinearLayout
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:orientation="vertical"
+ android:gravity="center"
+ android:layout_margin="20dp">
+ <TextView
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Student Information"
+ android:textAppearance="?android:attr/textAppearanceLarge"
+ android:textStyle="bold"
+ android:layout_gravity="center" />
+ <EditText
+Ex.No:02 Application using Layout Managers and Event Listeners 20/07/2026
+ android:id="@+id/editTextName"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter Name" />
+ <EditText
+ android:id="@+id/editTextDno"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter D.NO" />
+ <EditText
+ android:id="@+id/editTextDept"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter Department" />
+ <EditText
+ android:id="@+id/editTextContact"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Enter Contact Number" />
+
+Activity_xml-code-2:
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:app="http://schemas.android.com/apk/res-auto"
+ xmlns:tools="http://schemas.android.com/tools"
+ android:id="@+id/main"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent"
+ tools:context=".MainActivity2">
+ <LinearLayout
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:orientation="vertical"
+ android:padding="20dp">
+ <TextView
+ android:id="@+id/textView1"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="STUDENT INFORMATION"
+ android:textAppearance="?android:attr/textAppearanceLarge"
+ android:textStyle="bold"
+ android:paddingBottom="10dp" />
+ <TextView
+ android:id="@+id/textViewName"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Name:" />
+ <TextView
+ android:id="@+id/textViewDno"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="D.NO:" />
+ <TextView
+ android:id="@+id/textViewDept"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Department:" />
+ <TextView
+ android:id="@+id/textViewContact"
+ android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+ android:text="ContactNO:" />
+ </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+Mainactivity.java-1:
+package com.example.sample;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+public class MainActivity1 extends Activity {
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+ super.onCreate(savedInstanceState);
+ setContentView(R.layout.activity_main);
+ final EditText editTextName = findViewById(R.id.editTextName);
+ final EditText editTextDno = findViewById(R.id.editTextDno);
+ final EditText editTextDept = findViewById(R.id.editTextDept);
+ final EditText editTextContact = findViewById(R.id.editTextContact);
+ Button buttonOpenActivity2 = findViewById(R.id.buttonOpenActivity2);
+ buttonOpenActivity2.setOnClickListener(new View.OnClickListener() {
+ @Override
+ public void onClick(View v) {
+ String name = editTextName.getText().toString();
+ String dno = editTextDno.getText().toString();
+ String department = editTextDept.getText().toString();
+ String contact = editTextContact.getText().toString();
+ Intent intent = new Intent(MainActivity1.this, MainActivity2.class);
+ intent.putExtra("NAME", name);
+ intent.putExtra("DNO", dno);
+ intent.putExtra("DEPARTMENT", department);
+ intent.putExtra("CONTACT", contact);
+ startActivity(intent);
+ }
+ });
+ }
+}
+
+Mainactivity.java-2:
+package com.example.sample;
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
+public class MainActivity2 extends Activity {
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+ super.onCreate(savedInstanceState);
+ setContentView(R.layout.activity_main2);
+ TextView textViewName = findViewById(R.id.textViewName);
+ TextView textViewDno = findViewById(R.id.textViewDno);
+ TextView textViewDept = findViewById(R.id.textViewDept);
+ TextView textViewContact = findViewById(R.id.textViewContact);
+ String name = getIntent().getStringExtra("NAME");
+ String dno = getIntent().getStringExtra("DNO");
+ String department = getIntent().getStringExtra("DEPARTMENT");
+ String contact = getIntent().getStringExtra("CONTACT");
+ textViewName.setText("Name: " + name);
+ textViewDno.setText("D.NO: " + dno);
+ textViewDept.setText("Department: " + department);
+ textViewContact.setText("ContactNO: " + contact);
+ }
+}
+
+manifest code:
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:tools="http://schemas.android.com/tools"
+ package="com.example.sample">
+ <application
+ android:allowBackup="true"
+ android:icon="@mipmap/ic_launcher"
+ android:label="@string/app_name"
+ android:roundIcon="@mipmap/ic_launcher_round"
+ android:supportsRtl="true"
+ android:theme="@style/Theme.Sample">
+ <activity
+ android:name=".MainActivity1"
+ android:exported="true"
+ android:windowSoftInputMode="adjustResize">
+ <intent-filter>
+ <action android:name="android.intent.action.MAIN" />
+ <category android:name="android.intent.category.LAUNCHER" />
+ </intent-filter>
+ </activity>
+ <activity android:name=".MainActivity2" />
+ </application>
+</manifest>
