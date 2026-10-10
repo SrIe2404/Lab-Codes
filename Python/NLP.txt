@@ -1,0 +1,17 @@
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+stoplist = stopwords.words('english')
+text = '''
+In computing, stop words are words which are filtered out before or af
+ter processing of natural language data(text). Though "stop words" usu
+ally refers to the most common words in a language, there is no single
+universal list of stop words used by all natural language processing
+tools, and indeed not all tools even use such a list. some tools speci
+fically avoid removing these stop words to support phrase search.
+'''
+print("\Original string:")
+print(text)
+clean_word_list=[word for word in text.split()if word not in stoplist]
+print("\After removing stop words from the said text:")
+print(clean_word_list)
